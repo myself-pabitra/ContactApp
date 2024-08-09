@@ -99,9 +99,9 @@ def view_contacts():
       </thead>
       <tbody>
         {
-        "".join([
-            f"<tr><td>{contact.first_name}</td><td>{contact.last_name}</td><td>{
-                contact.mobile}</td><td>{contact.email}</td><td>{contact.message}</td></tr>"
+        ''.join([
+            f'''<tr><td>{contact.first_name}</td><td>{contact.last_name}</td><td>{
+                contact.mobile}</td><td>{contact.email}</td><td>{contact.message}</td></tr>'''
             for contact in contacts
         ])
     }
