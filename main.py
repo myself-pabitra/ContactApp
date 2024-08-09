@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String
@@ -9,9 +9,11 @@ app = FastAPI()
 
 # Database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./contacts.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={
+                       "check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -22,28 +24,36 @@ class Contact(Base):
     email = Column(String, index=True)
     message = Column(String)
 
+
 Base.metadata.create_all(bind=engine)
+
 
 class ContactCreate(BaseModel):
     first_name: str
     last_name: str
-    mobile : str
+    mobile: str
     email: str
     message: str
 
+
 @app.post("/contact")
-def create_contact(contact: ContactCreate):
+def create_contact(request: Request, first_name=Form(...), last_name=Form(...), mobile=Form(...), email=Form(...), message=Form(...)):
+    # def create_contact(contact: ContactCreate):
     db = SessionLocal()
-    db_contact = Contact(**contact.dict())
+    db_contact = Contact(first_name=first_name, last_name=last_name,
+                         mobile=mobile, email=email, message=message)
+    # db_contact = Contact(**contact.dict())
     db.add(db_contact)
     db.commit()
     db.refresh(db_contact)
     db.close()
     return {"status": "success", "message": "Contact form submitted successfully"}
 
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Contact Form API"}
+
 
 @app.get("/view-contacts")
 def view_contacts():
@@ -89,14 +99,15 @@ def view_contacts():
       </thead>
       <tbody>
         {
-          "".join([
-            f"<tr><td>{contact.first_name}</td><td>{contact.last_name}</td><td>{contact.mobile}</td><td>{contact.email}</td><td>{contact.message}</td></tr>"
+        "".join([
+            f"<tr><td>{contact.first_name}</td><td>{contact.last_name}</td><td>{
+                contact.mobile}</td><td>{contact.email}</td><td>{contact.message}</td></tr>"
             for contact in contacts
-          ])
-        }
+        ])
+    }
       </tbody>
     </table>
   </body>
 </html>
 """
-)
+    )
