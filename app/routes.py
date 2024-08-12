@@ -12,7 +12,7 @@ router = APIRouter()
 @router.post("/contact")
 def create_contact_route(request: Request, first_name=Form(...), last_name=Form(...), mobile=Form(...), email=Form(...), message=Form(...), db: Session = Depends(get_db)):
     create_contact(db, first_name, last_name, mobile, email, message)
-    # return {"status": "success", "message": "Contact form submitted successfully"}
+    return {"status": "success", "message": "Contact form submitted successfully"}
 
 
 @router.get("/")

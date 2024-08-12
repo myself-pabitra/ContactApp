@@ -2,10 +2,10 @@
 
 from fastapi import FastAPI
 from app.routes import router as contact_router
-from app.database import engine
-from app.models import Base
+from app.database import init_db
 
-Base.metadata.create_all(bind=engine)
+# Initialize the database
+init_db()
 
 app = FastAPI()
 
